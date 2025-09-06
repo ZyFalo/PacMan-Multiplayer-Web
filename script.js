@@ -186,6 +186,11 @@ function addScorePopup(x, y, score) {
 
 // Entrada
 window.addEventListener('keydown', (e) => {
+  // Prevenir scroll con teclas de flecha
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+  }
+  
   if (e.key === 'r' || e.key === 'R') { resetGame(); return; }
   if (e.key === 'e' || e.key === 'E') { toggleEditor(); return; }
   if (gameOver) return;
@@ -938,62 +943,102 @@ function addRect(g, r0,c0,r1,c1){
   }
 }
 
+// ====== TU MAPA PERSONALIZADO ======
+// Puedes modificar esta función para crear el mapa que quieras
 function addMazeGeometry(g){
   const cr = Math.floor(ROWS/2);
   const cc = Math.floor(COLS/2);
 
   const hWall = (r, c0, c1) => { for(let c=c0;c<=c1;c++) g[r][c]=1; };
   const vWall = (c, r0, r1) => { for(let r=r0;r<=r1;r++) g[r][c]=1; };
-  const open = (r,c) => { if (r>=0&&r<ROWS&&c>=0&&c<COLS) g[r][c]=0; };
+  const open  = (r,c) => { if (r>=0&&r<ROWS&&c>=0&&c<COLS) g[r][c]=0; };
+  const rect  = (r0,c0,r1,c1)=>{ for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)g[r][c]=1; };
 
-  hWall(1, 1, COLS-2); hWall(ROWS-2, 1, COLS-2);
-  vWall(1, 1, ROWS-2); vWall(COLS-2, 1, ROWS-2);
-  open(1,1); open(1,COLS-2); open(ROWS-2,1); open(ROWS-2, COLS-2);
+  // 1) Bordes exteriores
+  hWall(0, 0, COLS-1);
+  hWall(ROWS-1, 0, COLS-1);
+  vWall(0, 0, ROWS-1);
+  vWall(COLS-1, 0, ROWS-1);
 
-  hWall(3, 2, COLS-3); open(3, Math.floor(COLS*0.25)); open(3, cc); open(3, Math.floor(COLS*0.75));
-  hWall(5, 4, COLS-5); open(5, cc-6); open(5, cc+6);
-  vWall(6, 2, 6); vWall(COLS-7, 2, 6);
+  // 2) Anillo interior (rectángulo hueco)
+  //   ####### 
+  //   #     #   → deja 2 celdas de margen entre borde exterior e interior
+  //   #######
+  hWall(2, 2, COLS-3);
+  hWall(ROWS-3, 2, COLS-3);
+  vWall(2, 2, ROWS-3);
+  vWall(COLS-3, 2, ROWS-3);
 
-  addRect(g, cr-5, 3, cr+1, 9);
-  addRect(g, cr-5, COLS-10, cr+1, COLS-4);
-  open(cr-3, 3); open(cr-1, 3); open(cr-3, COLS-4); open(cr-1, COLS-4);
-  open(cr+1, 6); open(cr+1, COLS-7);
+  // 3) Ejes centrales (cruz)
+  hWall(cr, 3, COLS-4);
+  vWall(cc, 3, ROWS-4);
 
-  hWall(cr-4, 10, COLS-11); hWall(cr+4, 10, COLS-11);
-  vWall(10, cr-4, cr+4); vWall(COLS-11, cr-4, cr+4);
-  open(cr, 10); open(cr, COLS-11); open(cr-4, cc); open(cr+4, cc);
+  // 4) Casa de fantasmas en el centro (5x7) con salida HORIZONTAL
+  rect(cr-2, cc-3, cr+2, cc+3);
 
-  addRect(g, cr-1, cc-3, cr+1, cc+3);
-  open(cr, cc-3); open(cr, cc-2); open(cr, cc-1); open(cr, cc); open(cr, cc+1); open(cr, cc+2); open(cr, cc+3);
+  // Abrimos boquita horizontal: cc-2..cc+2 en la FILA central
+  for (let c = cc-2; c <= cc+2; c++) open(cr, c);
 
-  open(cr, 0); open(cr, COLS-1); open(cr-1, 0); open(cr-1, COLS-1); open(cr+1, 0); open(cr+1, COLS-1);
+  // 5) Conectar la casa a los pasillos laterales (corredores horizontales)
+  // abrimos un corredor continuo por la fila central
+  for (let c = 1; c < COLS-1; c++) open(cr, c);
 
-  for (const c of [5, 9, COLS-10, COLS-6]){
-    addRect(g, ROWS-6, c, ROWS-5, c+1);
-  }
-  vWall(cc, ROWS-5, ROWS-3); open(ROWS-4, cc);
+  // 6) Túneles laterales (wrap)
+  open(cr, 0);
+  open(cr, COLS-1);
 
-  open(2, cc); open(ROWS-3, cc-8); open(ROWS-3, cc+8);
+  // 7) Salas de las esquinas (bloques con una abertura)
+  rect(3, 3, 5, 6);          open(4, 6);
+  rect(3, COLS-7, 5, COLS-4); open(4, COLS-7);
+  rect(ROWS-6, 3, ROWS-4, 6); open(ROWS-5, 6);
+  rect(ROWS-6, COLS-7, ROWS-4, COLS-4); open(ROWS-5, COLS-7);
+
+  // 8) Pasillos verticales adicionales (para loops)
+  vWall(6, 6, ROWS-7); open(cr, 6);
+  vWall(COLS-7, 6, ROWS-7); open(cr, COLS-7);
+
+  // 9) Pequeños bloques simétricos en la mitad inferior
+  rect(cr+3, cc-9, cr+4, cc-7);
+  rect(cr+3, cc-2, cr+4, cc);
+  rect(cr+3, cc+7, cr+4, cc+9);
+
+  // 10) Limpia un par de pasos verticales para que no queden cul-de-sacs
+  open(cr-4, cc);
+  open(cr+4, cc);
 }
 
 function seedPellets(pel, pow, g){
-  for (let r=0;r<ROWS;r++){ for(let c=0;c<COLS;c++){ pel[r][c]=false; pow[r][c]=false; }}
+  // limpia
+  for (let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){ pel[r][c]=false; pow[r][c]=false; }
+
+  // desde la posición inicial de Pac-Man calculamos alcanzables
   const startR = ROWS-3;
   const startC = Math.floor(COLS/2);
   const reach = computeReachable(g, startR, startC);
+
+  // pellets en todos los caminos alcanzables
   for (let r=0;r<ROWS;r++){
     for (let c=0;c<COLS;c++){
       if (g[r][c]===0 && reach[r][c]) pel[r][c] = true;
     }
   }
+
+  // quita pellets dentro de la casa de fantasmas
   clearPelletsInRect(pel, pow, ghostHouse);
-  const cr = Math.floor(ROWS/2), cc = Math.floor(COLS/2);
-  const candidates = [
-    [1,1],[1,COLS-2],[ROWS-2,1],[ROWS-2,COLS-2],
-    [3, cc-9],[3, cc+9],[ROWS-4, cc-9],[ROWS-4, cc+9]
+
+  // SÚPER-PELLETS: 4 esquinas interiores + 2 en el corredor central
+  const corners = [
+    [3,3], [3, COLS-4], [ROWS-4, 3], [ROWS-4, COLS-4]
   ];
-  for (const [rr,cc2] of candidates){
-    if (rr>=0 && rr<ROWS && cc2>=0 && cc2<COLS && g[rr][cc2]===0 && reach[rr][cc2]) { pow[rr][cc2]=true; pel[rr][cc2]=false; }
+  const midLane = [
+    [Math.floor(ROWS/2), 5], [Math.floor(ROWS/2), COLS-6]
+  ];
+
+  for (const [rr,cc] of [...corners, ...midLane]){
+    if (rr>=0 && rr<ROWS && cc>=0 && cc<COLS && g[rr][cc]===0 && reach[rr][cc]) {
+      pow[rr][cc] = true;
+      pel[rr][cc] = false;
+    }
   }
 }
 
