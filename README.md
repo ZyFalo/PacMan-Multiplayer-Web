@@ -167,10 +167,6 @@ Modifica las variables CSS en `styles.css`:
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 👨‍💻 Autor
-
-**GitHub Copilot** - *Desarrollo completo del juego*
-
 ## 🎉 Agradecimientos
 
 - Inspirado en el clásico Pac-Man de Namco
