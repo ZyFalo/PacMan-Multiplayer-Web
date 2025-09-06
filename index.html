@@ -68,16 +68,26 @@
     <div class="wrap" id="gameWrap">
       <h1 class="game-title">PAC-MAN ARENA</h1>
       
-      <div class="toolbar">
-        <button id="btnEdit">🎨 Editar Mapa</button>
-        <span id="toolInfo"></span>
+      <div class="game-layout">
+        <div class="game-center">
+          <div class="toolbar">
+            <button id="btnEdit">🎨 Editar Mapa</button>
+            <span id="toolInfo"></span>
+          </div>
+          
+          <!-- Información de puntos encima del mapa -->
+          <div id="scoreHud" class="score-hud"></div>
+          
+          <div class="canvas-container">
+            <canvas id="game" width="672" height="504"></canvas>
+          </div>
+        </div>
+        
+        <!-- Panel de información a la derecha -->
+        <div class="info-panel">
+          <div id="hud" class="hud"></div>
+        </div>
       </div>
-      
-      <div class="canvas-container">
-        <canvas id="game" width="672" height="504"></canvas>
-      </div>
-      
-      <div id="hud" class="hud"></div>
     </div>
 
     <script src="script.js"></script>

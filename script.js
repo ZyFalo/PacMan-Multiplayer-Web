@@ -21,6 +21,7 @@ canvas.height = CANVAS_H;
 const ctx = canvas.getContext('2d');
 /** @type {HTMLDivElement} */
 const hud = document.getElementById('hud');
+const scoreHud = document.getElementById('scoreHud');
 const btnEdit = document.getElementById('btnEdit');
 const editorPanel = document.getElementById('editorPanel');
 const editorOverlay = document.getElementById('editorOverlay');
@@ -378,6 +379,7 @@ function draw(t){
 
   // HUD
   hud.innerHTML = renderHUD();
+  scoreHud.innerHTML = renderScoreHUD();
   
   // Overlay del editor (grilla)
   if (editorMode) { 
@@ -607,14 +609,22 @@ function drawGameOverOverlay(){
   ctx.fillText('Pulsa R para reiniciar', centerX, centerY + 20);
 }
 
+function renderScoreHUD(){
+  return `🏆 Puntos: <span style="color: var(--accent-yellow);">${pac.score}</span> • 🟡 Pellets restantes: <span style="color: var(--accent-blue);">${remainingPellets}</span>`;
+}
+
 function renderHUD(){
   return [
+    `<h3>🎮 Controles</h3>`,
     `<div class="row"><span class="player-info player-pacman">🟡 Pac‑Man</span> numpad: <span class="kbd">8</span> <span class="kbd">4</span> <span class="kbd">5</span> <span class="kbd">6</span></div>`,
     `<div class="row"><span class="player-info player-ghost1">🔴 Fantasma 1</span> <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span></div>`,
     `<div class="row"><span class="player-info player-ghost2">🟣 Fantasma 2</span> <span class="kbd">I</span><span class="kbd">J</span><span class="kbd">K</span><span class="kbd">L</span></div>`,
     `<div class="row"><span class="player-info player-ghost3">🔵 Fantasma 3</span> flechas: <span class="kbd">↑</span> <span class="kbd">↓</span> <span class="kbd">←</span> <span class="kbd">→</span></div>`,
-    `<div class="row">⭐ Super‑pellet: fantasmas asustados ${FRIGHT_TIME}s. <span class="kbd">R</span> reinicia. <span class="kbd">E</span> editor.</div>`,
-    `<div class="row">🏆 Puntos: <span class="score-display">${pac.score}</span> • Pellets restantes: <span class="pellets-remaining">${remainingPellets}</span></div>`
+    `<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(0, 212, 255, 0.2);">`,
+    `<div class="row">⭐ <strong>Super‑pellet:</strong> fantasmas asustados ${FRIGHT_TIME}s</div>`,
+    `<div class="row">🎨 <span class="kbd">E</span> - Activar editor de mapas</div>`,
+    `<div class="row">🔄 <span class="kbd">R</span> - Reiniciar juego</div>`,
+    `</div>`
   ].join('');
 }
 

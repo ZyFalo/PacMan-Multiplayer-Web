@@ -64,6 +64,56 @@ body::before {
   margin-left: 350px;
 }
 
+/* Layout del juego */
+.game-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.game-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.info-panel {
+  min-width: 300px;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Alinear desde abajo con el canvas */
+  margin-top: 80px; /* Espacio para toolbar + score-hud */
+}
+
+/* HUD de puntuación encima del mapa */
+.score-hud {
+  background: var(--secondary-bg);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--accent-yellow);
+  border-radius: 12px;
+  padding: 15px 25px;
+  text-align: center;
+  color: var(--text-primary);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.3),
+    var(--shadow-deep);
+  animation: scoreGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes scoreGlow {
+  from { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), var(--shadow-deep); }
+  to { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), var(--shadow-deep); }
+}
+
 /* Título del juego */
 .game-title {
   font-family: 'Orbitron', sans-serif;
@@ -109,13 +159,22 @@ canvas.editor-active {
   border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 15px;
   padding: 20px;
-  text-align: center;
-  line-height: 1.6;
+  text-align: left;
+  line-height: 1.8;
   font-size: 14px;
   color: var(--text-secondary);
   box-shadow: var(--shadow-deep);
-  max-width: 800px;
   width: 100%;
+}
+
+.hud h3 {
+  color: var(--accent-blue);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  margin: 0 0 15px 0;
+  text-align: center;
+  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+  padding-bottom: 10px;
 }
 
 .kbd {
@@ -549,6 +608,20 @@ a:hover {
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+  .game-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .info-panel {
+    min-width: auto;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .game-title {
     font-size: 2rem;
@@ -570,6 +643,11 @@ a:hover {
   .hud {
     padding: 15px;
     font-size: 12px;
+  }
+  
+  .score-hud {
+    font-size: 14px;
+    padding: 10px 15px;
   }
   
   .toolbar {
