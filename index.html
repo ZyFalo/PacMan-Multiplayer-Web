@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pac‑Man 4 Jugadores (Local)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  </head>
+  <body>
+    <!-- Overlay para el fondo cuando el editor está activo -->
+    <div class="editor-overlay" id="editorOverlay"></div>
+    
+    <!-- Panel del editor (sidebar) -->
+    <div id="editorPanel">
+      <div class="editor-container">
+        <div class="editor-header">
+          <h2 class="editor-title">🛠️ Editor de Mapa</h2>
+          <button class="editor-close" id="editorClose">×</button>
+        </div>
+        
+        <div class="editor-section">
+          <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 16px;">🎨 Herramientas</h3>
+          <div class="editor-tools">
+            <button data-tool="wall" class="toolBtn">
+              <span style="font-size: 20px;">🧱</span>
+              <span>Pared</span>
+            </button>
+            <button data-tool="empty" class="toolBtn">
+              <span style="font-size: 20px;">⭕</span>
+              <span>Vacío</span>
+            </button>
+            <button data-tool="pellet" class="toolBtn">
+              <span style="font-size: 20px;">🟡</span>
+              <span>Pellet</span>
+            </button>
+            <button data-tool="power" class="toolBtn">
+              <span style="font-size: 20px;">⭐</span>
+              <span>Súper</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="editor-section">
+          <h3 style="color: var(--accent-pink); margin-bottom: 10px; font-size: 16px;">🧹 Acciones</h3>
+          <div class="editor-actions">
+            <button id="btnClearWalls" class="btn-clear">🧹 Borrar Paredes</button>
+            <button id="btnClearPellets" class="btn-clear">🚫 Borrar Pellets</button>
+          </div>
+        </div>
+        
+        <div class="editor-info">
+          💡 <strong>Instrucciones:</strong><br>
+          • Selecciona una herramienta<br>
+          • Click y arrastra en el mapa para pintar<br>
+          • El borde externo no es editable<br>
+          • Los cambios se aplicarán al reiniciar
+        </div>
+        
+        <div class="editor-controls">
+          <button id="btnCancelEdit">❌ Cancelar</button>
+          <button id="btnSaveEdit">✅ Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap" id="gameWrap">
+      <h1 class="game-title">PAC-MAN ARENA</h1>
+      
+      <div class="toolbar">
+        <button id="btnEdit">🎨 Editar Mapa</button>
+        <span id="toolInfo"></span>
+      </div>
+      
+      <div class="canvas-container">
+        <canvas id="game" width="672" height="504"></canvas>
+      </div>
+      
+      <div id="hud" class="hud"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
