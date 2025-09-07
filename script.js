@@ -321,9 +321,27 @@ function updateMover(e, dt, t=performance.now()/1000){
 
   const dx = e.dir.x * speed * dt;
   const dy = e.dir.y * speed * dt;
-
   if (!nearCenter){
-    e.x += dx; e.y += dy;
+    // Movimiento dentro de la celda actual. Calculamos la nueva posición
+    // y evitamos que se cruce con paredes en frames de baja tasa.
+    let newX = e.x + dx;
+    let newY = e.y + dy;
+
+    // Comprobar teletransporte horizontal antes de validar la celda destino
+    let testX = newX;
+    if (testX < -TILE/2) testX = COLS*TILE - TILE/2;
+    if (testX > COLS*TILE + TILE/2) testX = TILE/2;
+    let [nr, nc] = toCell(testX, newY);
+
+    if (grid[nr][nc] === 0){
+      e.x = newX;
+      e.y = newY;
+    } else {
+      // Al chocar, detener y colocar al centro de la celda actual
+      e.dir = DIRS.STOP;
+      e.x = centerX;
+      e.y = centerY;
+    }
   } else {
     let nr = r + e.dir.y;
     let nc = c + e.dir.x;
@@ -336,6 +354,7 @@ function updateMover(e, dt, t=performance.now()/1000){
     }
   }
 
+  // Teletransporte horizontal final tras mover o detectar colisión
   if (e.x < -TILE/2) e.x = COLS*TILE - TILE/2;
   if (e.x > COLS*TILE + TILE/2) e.x = TILE/2;
 }
