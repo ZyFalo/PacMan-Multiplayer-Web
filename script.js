@@ -954,6 +954,10 @@ function drawEditorOverlay(){
 function addBorders(g){
   for (let r=0;r<ROWS;r++){ g[r][0]=1; g[r][COLS-1]=1; }
   for (let c=0;c<COLS;c++){ g[0][c]=1; g[ROWS-1][c]=1; }
+  // Reabrir los túneles laterales para evitar que se cierren al guardar
+  const cr = Math.floor(ROWS / 2);
+  g[cr][0] = 0;
+  g[cr][COLS-1] = 0;
 }
 
 function addRect(g, r0,c0,r1,c1){
